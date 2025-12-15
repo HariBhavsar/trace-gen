@@ -5,7 +5,10 @@
     - Follow procedure in `valgrind-local/setup.md`
 3. BBV output file generation
     - General template is `valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/<file_name>.out <command to run on valgrind>`
-    - Exact command ran: `valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/pr-twitter.out ./gapbs/pr -f ./gapbs/benchmark/graphs/twitter.sg -i1000 -t1e-4 -n16`
+    - Exact command ran: `valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/pr-twitter/pr-twitter.out ./gapbs/pr -f ./gapbs/benchmark/graphs/twitter.sg -i1000 -t1e-4 -n16`
     - Ran with nohup, not sure of execution time, but larger than 30 minutes
+        - Completed overnight
 4. SimPoint
     - Follow procedure in `Simpoint/setup.md`
+# Errors
+1. Currently, ran `pr` in multithreaded mode. This is wrong, since we want only one `.out` file to be generated. Therefore, will push everything to git, then prune out everything and re-run.

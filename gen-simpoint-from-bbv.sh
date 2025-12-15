@@ -1,0 +1,1 @@
+./Simpoint/SimPoint.3.2/bin/simpoint -loadFVFile ./BBVs/pr-twitter/pr-twitter.out -maxK 30 -saveSimpoints ./Simpoint/Storage/Simpoints/pr-twitter-30K.simpoints -saveSimpointWeights ./Simpoint/Storage/SimpointWeights/pr-twitter-30K.weights
