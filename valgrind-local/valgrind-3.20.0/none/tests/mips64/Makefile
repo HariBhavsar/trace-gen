@@ -443,13 +443,13 @@ am__define_uniq_tagged_files = \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/Makefile.all.am \
 	$(top_srcdir)/Makefile.tool-tests.am $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} '/home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/missing' aclocal-1.16
+ACLOCAL = ${SHELL} '/home/hari/trace-gen/valgrind-local/valgrind-3.20.0/missing' aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = /usr/bin/ar
-AUTOCONF = ${SHELL} '/home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/missing' autoconf
-AUTOHEADER = ${SHELL} '/home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/missing' autoheader
-AUTOMAKE = ${SHELL} '/home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/missing' automake-1.16
+AUTOCONF = ${SHELL} '/home/hari/trace-gen/valgrind-local/valgrind-3.20.0/missing' autoconf
+AUTOHEADER = ${SHELL} '/home/hari/trace-gen/valgrind-local/valgrind-3.20.0/missing' autoheader
+AUTOMAKE = ${SHELL} '/home/hari/trace-gen/valgrind-local/valgrind-3.20.0/missing' automake-1.16
 AWK = gawk
 BOOST_CFLAGS = 
 BOOST_LIBS = 
@@ -501,7 +501,7 @@ FLAG_UNLIMITED_INLINE_UNIT_GROWTH = --param inline-unit-growth=900
 FLAG_W_CAST_ALIGN = -Wcast-align
 FLAG_W_CAST_QUAL = -Wcast-qual
 FLAG_W_EMPTY_BODY = -Wempty-body
-FLAG_W_ENUM_CONVERSION = -Wenum-conversion
+FLAG_W_ENUM_CONVERSION = 
 FLAG_W_EXTRA = -Wextra
 FLAG_W_FORMAT = -Wformat
 FLAG_W_FORMAT_SECURITY = -Wformat-security
@@ -511,9 +511,9 @@ FLAG_W_IMPLICIT_FALLTHROUGH = -Wimplicit-fallthrough=2
 FLAG_W_LOGICAL_OP = -Wlogical-op
 FLAG_W_MISSING_PARAMETER_TYPE = -Wmissing-parameter-type
 FLAG_W_NO_EXPANSION_TO_DEFINED = -Wno-expansion-to-defined
-FLAG_W_NO_INFINITE_RECURSION = -Wno-infinite-recursion
+FLAG_W_NO_INFINITE_RECURSION = 
 FLAG_W_NO_MEMSET_TRANSPOSED_ARGS = -Wno-memset-transposed-args
-FLAG_W_NO_MISMATCHED_NEW_DELETE = -Wno-mismatched-new-delete
+FLAG_W_NO_MISMATCHED_NEW_DELETE = 
 FLAG_W_NO_NONNULL = -Wno-nonnull
 FLAG_W_NO_OVERFLOW = -Wno-overflow
 FLAG_W_NO_POINTER_SIGN = -Wno-pointer-sign
@@ -523,9 +523,9 @@ FLAG_W_NO_UNUSED_FUNCTION = -Wno-unused-function
 FLAG_W_OLD_STYLE_DECLARATION = -Wold-style-declaration
 FLAG_W_WRITE_STRINGS = -Wwrite-strings
 GDB = /usr/bin/gdb
-GLIBC_LIBC_PATH = */lib*/libc-2.*so*
-GLIBC_LIBPTHREAD_PATH = */lib*/libpthread-2.*so*
-GLIBC_VERSION = 2.31
+GLIBC_LIBC_PATH = */lib*/libc.so.6
+GLIBC_LIBPTHREAD_PATH = */lib*/libc.so.6
+GLIBC_VERSION = 2.39
 GREP = /usr/bin/grep
 HWCAP_HAS_ALTIVEC = 
 HWCAP_HAS_DFP = 
@@ -553,7 +553,7 @@ LTO_AR = /usr/bin/ar
 LTO_CFLAGS = 
 LTO_RANLIB = ranlib
 MAINT = #
-MAKEINFO = ${SHELL} '/home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/missing' makeinfo
+MAKEINFO = ${SHELL} '/home/hari/trace-gen/valgrind-local/valgrind-3.20.0/missing' makeinfo
 MKDIR_P = /usr/bin/mkdir -p
 MPI_CC = /usr/bin/mpicc
 OBJEXT = o
@@ -589,10 +589,10 @@ VG_VER_MAJOR = 3
 VG_VER_MINOR = 20
 XCODE_DIR = 
 XCRUN = 
-abs_builddir = /home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/none/tests/mips64
-abs_srcdir = /home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/none/tests/mips64
-abs_top_builddir = /home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0
-abs_top_srcdir = /home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0
+abs_builddir = /home/hari/trace-gen/valgrind-local/valgrind-3.20.0/none/tests/mips64
+abs_srcdir = /home/hari/trace-gen/valgrind-local/valgrind-3.20.0/none/tests/mips64
+abs_top_builddir = /home/hari/trace-gen/valgrind-local/valgrind-3.20.0
+abs_top_srcdir = /home/hari/trace-gen/valgrind-local/valgrind-3.20.0
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -620,7 +620,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home2/bhavsar/ISCA/trace-gen/valgrind-local/valgrind-3.20.0/install-sh
+install_sh = ${SHELL} /home/hari/trace-gen/valgrind-local/valgrind-3.20.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -657,7 +657,7 @@ AM_CFLAGS_BASE = -O2 -g -Wall -Wmissing-prototypes -Wshadow \
 	-Wempty-body -Wformat -Wformat-signedness \
 	-Wformat-security -Wignored-qualifiers \
 	-Wmissing-parameter-type -Wlogical-op \
-	-Wenum-conversion -Wimplicit-fallthrough=2 \
+	 -Wimplicit-fallthrough=2 \
 	-Wold-style-declaration -finline-functions \
 	-fno-stack-protector  \
 	-fno-strict-aliasing -fno-builtin $(am__append_1) \

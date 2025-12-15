@@ -261,7 +261,7 @@
 #define HAVE_PTHREAD_SPIN_LOCK 1
 
 /* Define to 1 if you have the `pthread_yield' function. */
-#define HAVE_PTHREAD_YIELD 1
+/* #undef HAVE_PTHREAD_YIELD */
 
 /* Define to 1 if you have the `PTRACE_GETREGS' ptrace request. */
 #define HAVE_PTRACE_GETREGS 1
