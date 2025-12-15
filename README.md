@@ -14,6 +14,8 @@
     - Follow procedure in `Simpoint/setup.md`
     - Run the `gen-simpoint-from-bbv.sh` script (< 1 min)
     - Observations
-        - With 
+        - With 120 maxK, got decent ish output
+5. Tracer
+    - Follow instructions in `intel-pintool/procedure.md`
 # Errors
 1. Currently, ran `pr` in multithreaded mode. This is wrong, since we want only one `.out` file to be generated. Therefore, will push everything to git, then prune out everything and re-run.
