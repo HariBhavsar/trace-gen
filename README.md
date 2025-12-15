@@ -5,7 +5,8 @@
     - Follow procedure in `valgrind-local/setup.md`
 3. BBV output file generation
     - General template is `valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/<file_name>.out <command to run on valgrind>`
-    - Exact command ran: `valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/pr-twitter/pr-twitter.out ./gapbs/pr -f ./gapbs/benchmark/graphs/twitter.sg -i1000 -t1e-4 -n16`
+    - Exact command ran: `export OMP_NUM_THREADS=1 && valgrind --tool=exp-bbv --interval-size=300000000 --bb-out-file=BBVs/pr-twitter/pr-twitter.out ./gapbs/pr -f ./gapbs/benchmark/graphs/twitter.sg -i1000 -t1e-4 -n2 && export OMP_NUM_THREADS=96`
+        - Note, changed from n16 to n2, might be worth it to do n4 or n8 tbh
     - Ran with nohup, not sure of execution time, but larger than 30 minutes
         - Completed overnight
 4. SimPoint
