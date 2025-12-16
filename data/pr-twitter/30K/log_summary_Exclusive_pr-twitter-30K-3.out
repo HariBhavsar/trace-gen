@@ -1,0 +1,26 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 40000000
+Simulation Instructions: 100000000
+Number of CPUs: 1
+Off-chip DRAM Size: 4 GiB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+VirtualMemory physical capacity: 4293914624 num_ppages: 1048319
+VirtualMemory page size: 4096 log2_page_size: 12
+
+CPU 0 runs ./pr-twitter-30K-3.trace.xz
+CPU 0 Bimodal branch predictor
+Basic BTB sets: 1024 ways: 8 indirect buffer size: 4096 RAS size: 64
+Heartbeat CPU 0 instructions: 10000000 cycles: 3869102 heartbeat IPC: 2.58458 cumulative IPC: 2.58458 (Simulation time: 0 hr 0 min 35 sec) 
+Heartbeat CPU 0 instructions: 20000003 cycles: 7697236 heartbeat IPC: 2.61224 cumulative IPC: 2.59834 (Simulation time: 0 hr 1 min 12 sec) 
+Heartbeat CPU 0 instructions: 30000003 cycles: 11442406 heartbeat IPC: 2.67011 cumulative IPC: 2.62183 (Simulation time: 0 hr 1 min 48 sec) 
+Heartbeat CPU 0 instructions: 40000000 cycles: 15206651 heartbeat IPC: 2.65657 cumulative IPC: 2.63043 (Simulation time: 0 hr 2 min 24 sec) 
+
+Warmup complete CPU 0 instructions: 40000005 cycles: 15206652 (Simulation time: 0 hr 2 min 24 sec) 
+
+Heartbeat CPU 0 instructions: 50000002 cycles: 257431796 heartbeat IPC: 0.0412839 cumulative IPC: 0.0412839 (Simulation time: 0 hr 14 min 43 sec) 
+Heartbeat CPU 0 instructions: 60000003 cycles: 483179621 heartbeat IPC: 0.0442972 cumulative IPC: 0.0427375 (Simulation time: 0 hr 26 min 11 sec) 
+Heartbeat CPU 0 instructions: 70000004 cycles: 699306231 heartbeat IPC: 0.0462692 cumulative IPC: 0.0438533 (Simulation time: 0 hr 37 min 13 sec) 
+Heartbeat CPU 0 instructions: 80000000 cycles: 891757297 heartbeat IPC: 0.0519612 cumulative IPC: 0.0456334 (Simulation time: 0 hr 47 min 8 sec) 
+Heartbeat CPU 0 instructions: 90000002 cycles: 1102072254 heartbeat IPC: 0.0475477 cumulative IPC: 0.0460038 (Simulation time: 0 hr 57 min 53 sec) 
