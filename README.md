@@ -1,95 +1,181 @@
 # Champsim Trace Generation
-## What is a champsim trace?
-- It is a record of a sequence of instructions executed by a program
-- Champsim does not directly execute the binary of a program, instead it executes trace files of the binary
-- Traces are not arbitarily taken from random points inside the program's execution
-    - Because arbitary points may not be representative of the program's workload
-- Therefore, traces are taken at decisive **simulation points** inside the program's instruction stream
-- These simulation points more or less represent the program
+
+## What is a Champsim Trace?
+A Champsim trace is a record of a sequence of instructions executed by a program. Champsim does not directly execute the binary of a program; instead, it processes trace files of the binary. These traces are taken at decisive **simulation points** in the program's instruction stream to ensure they are representative of the program's workload.
+
 ## Requirements
-1. Valgrind
-    - You will need to setup the `valgrind` tool to generate champsim traces
-    - Follow the instructions in `valgrind-local/setup.md`
-2. SimPoint
-    - The `SimPoint` tool helps in identifying good representative simulation points
-    - Follow the instructions in `Simpoint/setup.md`
-3. Intel Pintool
-    - The intel pintool is responsible for generating the traces
-    - Follow the instructions in `intel-pintool/procedure.md`
-4. Champsim
-    - Champsim's tracer is required to generate champsim traces
-    - Once you have your Champsim directory installed, go to the `tracer/pin` folder
-    - Then run `make PIN_ROOT=$PIN_ROOT`
-    - Go back to the base champsim directory and do `export CHAMPSIM_ROOT=$(pwd)`
-## Generating a champsim trace for an arbitary program
-For an arbitary program, generating a (good) champsim trace consists of the following steps:
-1. BBV file generation:
-    - A Basic Block is a sequence of instructions with a precise entry point and exit point, that is, the first and last instruction in the sequence are explicitly defined
-    - A Basic Block Vector (BBV) is a high dimensional vector that counts how many times each basic block was executed during a specific interval
-    - BBVs more representative of the program state will have higher **weight**, that is, they will be executed more number of times
-    - BBV file generation is a **slow** step, since it requires execution of the program
-    - BBV file generation **must** be done for a single-threaded program, if your program is multi-threaded, modify it so that it becomes single-threaded 
-    - We use the `valgrind` tool to generate BBV files, the exact command is `valgrind --tool=exp-bbv --interval-size=<interval size> --bb-out-file=BBVs/<file_name>.out <command to run program>`
-    - The interval size should be *at least* as large as the sum of the number of warmup and simulation instructions you plan to execute on champsim
-2. Obtaining good simpoints:
-    - Good simpoints are representative of the program while containing a small fraction of the instructions
-    - *K-Means clustering* is used to *cluster* BBVs which have similar program execution
-    - Therefore, simpoints are a function of `maxK` which is defined as the maximum number of clusters
-        - Higher values of `maxK` imply the clustering is done at a finer granularity and higher quality
-        - Lower values imply lesser quality and that different BBVs may be clustered together
-    - Each cluster is given a representative interval and a weight
-        - The representative interval is chosen as the one which is most similar to other intervals in the same cluster
-        - The weight represents fraction of program execution that this particular cluster can account for
-    - Thus, clusters with higher weight are more important
-    - Obtaining good simpoints from `BBV` files is a **fast** step
-    - We use the `SimPoint` tool for identifying good simulation points
-    - The exact command to run is `./Simpoint/SimPoint.3.2/bin/simpoint -loadFVFile ./BBVs/<file_name>.out -maxK <maxK value> -saveSimpoints ./Simpoint/Storage/Simpoints/<file_name>-<maxK value>K.simpoints -saveSimpointWeights ./Simpoint/Storage/SimpointWeights/<file_name>-<maxK value>K.weights`
-        - The `.simpoints` files consist of lines that look like `<representative interval> <SPACE> <cluster ID>`
-        - The `.weights` files consist of lines that look like `<weight> <SPACE> <cluster ID>`
-        - The clusters having higher weights are more important and the representative interval denotes the start of the interval that represents that particular cluster
-3. Generating the trace file:
-    - Generating the trace files is a **slow** step
-    - Generating the trace files must be done on a single-threaded program, if your program is multi-threaded, modify it so that it becomes single-threaded
-    - Theoretically, we should be generating a trace file for every cluster
-    - Practically, that will be too many simulations to run on champsim
-    - Therefore, we opt to select clusters having larger weights
-    - The general goal is to select around 2-3 traces per program
-    - Ideally, you will select 2-3 clusters with weights higher than 0.1, obtained at a `maxK` value of around 120
-        - If all your clusters have weights < 0.1, you can either decrease the `maxK` value or decrease the threshold to something like 0.5
-        - For the sake of this project, I have ensured that only clusters having weight of at least 0.045 are selected
-        - If you have too many clusters with weights beyond 0.1, you should increase the weight threshold or decrease the `maxK` value
-        - Decreasing the `maxK` value causes decrease in quality since less clustering occurs but it also means that fewer clusters are formed and with higher weights
-    - Once you have selected a cluster, obtain the `representative interval` corresponding to that cluster
-    - Then find the number of instructions to skip (`FAST_FORWARD_INSTRUCTIONS`) as `FAST_FORWARD_INSTRUCTIONS = representative interval * interval size`
-    - Finally, check once that the `$PIN_ROOT` and `$CHAMPSIM_ROOT` environment variables are set, you can do this by running `echo $PIN_ROOT` and `echo $CHAMPSIM_ROOT` inside your terminal and checking that the output directory is valid
-    - Run the following command to generate the trace:
-        `$PIN_ROOT/pin -t $CHAMPSIM_ROOT/tracer/pin/obj-intel64/champsim_tracer.so -o [TRACE_FILE_NAME] -s [FAST_FORWARD_INSTRUCTIONS] [INTERVAL_SIZE] -- [PROGRAM] && xz [TRACE_FILE_NAME]`
-## Generating trace files for GAP benchmark suite
+To generate Champsim traces you will need the following tools and resources. The table below lists each tool, its purpose, and quick setup notes or links.
+
+| Tool | Purpose | Notes / Setup |
+|---|---|---|
+| Valgrind | Generate BBV (Basic Block Vector) files | Required for BBV generation. See [valgrind-local/setup.md](valgrind-local/setup.md). Example: `valgrind --tool=exp-bbv --interval-size=<interval> --bb-out-file=BBVs/<file>.out <command>` |
+| SimPoint | Identify representative simulation points (simpoints) | SimPoint performs K-means clustering on BBVs. See [Simpoint/setup.md](Simpoint/setup.md). Example: `./Simpoint/SimPoint.3.2/bin/simpoint -loadFVFile <fv> -maxK <K> -saveSimpoints <out.simpoints> -saveSimpointWeights <out.weights>` |
+| Intel Pintool | Generate Champsim trace files (via Pintool) | The pintool drives trace generation. See [intel-pintool/procedure.md](intel-pintool/procedure.md). Ensure `PIN_ROOT` points to your pintool install. |
+| Champsim tracer | Produce Champsim-compatible trace output | Build tracer: `cd $CHAMPSIM_ROOT/tracer/pin && make PIN_ROOT=$PIN_ROOT`. After building, set `CHAMPSIM_ROOT` in champsim root: `export CHAMPSIM_ROOT=$(pwd)` |
+| Disk space | Storage for trace and intermediate files | Every instruction ≈ 64B raw. Example: 300 million instructions ≈ 17.88 GB raw (typically compressed to ≈245MB). Ensure ample disk space for BBVs and raw traces. |
+
+
+## Generating a Champsim Trace for an Arbitrary Program
+
+### 1. BBV File Generation
+A **Basic Block Vector (BBV)** counts how many times each basic block is executed during specific intervals. This step is **slow** and must be done for single-threaded programs. Use the following command to generate BBV files:
+```bash
+valgrind --tool=exp-bbv --interval-size=<interval size> --bb-out-file=BBVs/<file_name>.out <command to run program>
+```
+- **Basic Block**: A sequence of instructions with a precise entry and exit point.
+- **BBV**: A high-dimensional vector counting how many times each basic block was executed during a specific interval.
+- **Interval Size**: Should be at least the sum of warmup and simulation instructions planned for Champsim.
+
+### 2. Obtaining Good Simpoints
+Good simpoints are representative of the program while containing a small fraction of instructions. Use the `SimPoint` tool to identify these points:
+```bash
+./Simpoint/SimPoint.3.2/bin/simpoint -loadFVFile ./BBVs/<file_name>.out -maxK <maxK value> -saveSimpoints ./Simpoint/Storage/Simpoints/<file_name>-<maxK value>K.simpoints -saveSimpointWeights ./Simpoint/Storage/SimpointWeights/<file_name>-<maxK value>K.weights
+```
+- **K-Means Clustering**: Used to group BBVs with similar program execution.
+- **Representative Interval**: The interval most similar to others in the same cluster.
+- **Weight**: Represents the fraction of program execution accounted for by the cluster.
+- **Cluster Selection**: Choose clusters with higher weights (e.g., >0.1).
+
+### Interpreting `.simpoints` and `.weights` files
+
+- `.simpoints` file lines look like:
+   ```text
+   <representative_interval> <cluster_ID>
+   ```
+   - `representative_interval` is an integer index; multiply it by the BBV `interval size` to get the number of instructions to fast-forward.
+   - `cluster_ID` matches the cluster labels in the corresponding `.weights` file.
+
+- `.weights` file lines look like:
+   ```text
+   <weight> <cluster_ID>
+   ```
+   - `weight` is a floating-point fraction (sum of weights ≈ 1.0) that indicates how much of the program's execution that cluster represents.
+
+- Example (toy):
+   - `example.simpoints`:
+      ```text
+      100 0
+      500 1
+      900 2
+      ```
+   - `example.weights`:
+      ```text
+      0.45 0
+      0.30 1
+      0.25 2
+      ```
+   - Interpretation: cluster `0` corresponds to interval `100` and has weight `0.45`.
+
+- Quick shell helpers:
+   - List clusters with weight > 0.1:
+      ```bash
+      awk '$1>0.1 {print $0}' Simpoint/Storage/SimpointWeights/<file>-<K>K.weights
+      ```
+   - Show top-N clusters by weight:
+      ```bash
+      sort -nrk1 Simpoint/Storage/SimpointWeights/<file>-<K>K.weights | head -n 10
+      ```
+   - Map cluster IDs to representative intervals:
+      ```bash
+      awk '{interval[$2]=$1} END{for(id in interval) print id, interval[id]}' Simpoint/Storage/Simpoints/<file>-<K>K.simpoints
+      ```
+
+### If you don't find 2–3 clusters with weight > 0.1 at `maxK=120`
+
+Follow this ordered strategy (used by `get-trace-from-simpoint.py`):
+
+1. Lower `maxK`: try `60`, then `30` — merging clusters often increases individual cluster weights.
+2. Reduce the selection threshold (e.g., from `0.1` to `0.05` or the repo default `0.045`) to allow more candidates.
+3. If thresholding still fails, pick the top 2–3 clusters by weight:
+    ```bash
+    sort -nrk1 Simpoint/Storage/SimpointWeights/<file>-120K.weights | head -n 3
+    ```
+4. Use cumulative coverage: select the smallest set of clusters whose summed weights exceed a coverage target (e.g., 20–50%).
+5. Prefer clusters that are stable across `maxK` values (appear at multiple K values or have similar representative intervals).
+6. Optionally merge nearby representative intervals if they are redundant.
+7. As a last resort, increase BBV `interval size` to produce fewer, more stable BBVs (this changes fidelity; use cautiously).
+
+After selecting clusters, compute `FAST_FORWARD_INSTRUCTIONS`:
+```
+FAST_FORWARD_INSTRUCTIONS = representative_interval * interval_size
+```
+
+
+**About `maxK` (choices and tradeoffs):**
+- `maxK` sets the maximum number of clusters for SimPoint's K-means clustering. Typical values used in this repository and in practice are `30`, `60`, and `120`.
+- Tradeoffs:
+   - `30` — coarse clustering: fewer representative intervals, faster SimPoint runs, useful for quick exploration or limited compute/disk.
+   - `60` — medium granularity: a reasonable compromise between runtime and representativeness.
+   - `120` — fine-grained clustering: usually yields higher-quality simpoints and more candidate intervals, but increases SimPoint runtime and the number of potential traces to generate.
+- Practical guidance: if clusters have very small weights at high `maxK`, reduce `maxK` (to merge similar intervals into fewer, higher-weight clusters). If you need more coverage and have resources, use `120`.
+
+### 3. Generating the Trace File
+This step is **slow** and must be done for single-threaded programs. Select 2-3 clusters with weights >0.1 (or adjust thresholds). For each cluster:
+1. Calculate `FAST_FORWARD_INSTRUCTIONS`:
+   ```
+   FAST_FORWARD_INSTRUCTIONS = representative interval * interval size
+   ```
+2. Ensure `$PIN_ROOT` and `$CHAMPSIM_ROOT` are set:
+   ```bash
+   echo $PIN_ROOT
+   echo $CHAMPSIM_ROOT
+   ```
+3. Generate the trace:
+   ```bash
+   $PIN_ROOT/pin -t $CHAMPSIM_ROOT/tracer/pin/obj-intel64/champsim_tracer.so -o [TRACE_FILE_NAME] -s [FAST_FORWARD_INSTRUCTIONS] [INTERVAL_SIZE] -- [PROGRAM] && xz [TRACE_FILE_NAME]
+   ```
+
+## Generating Trace Files for GAP Benchmark Suite
+
 ### Setup
-1. GAP
-    - First we need to install and setup the gap benchmark suite
-    - Follow the instructions in `gapbs/changes.md/Procedure`
-2. Tracing tools
-    - These tools will help us generate the traces and BBV files
-    - Follow the instructions in this `README.md/Requirements`
-3. Python (Optional)
-    - This directory contains several scripts which automate the tedious trace generation process
-    - These scripts are written in python, so python is an optional dependency
-### Simpoint and Weight file generation
-- We have given you a python script `generate_bbv.py`, which can be run by `python3 generate_bbv.py <algo> <graph>`, it will generate the simpoint and weight files
-- We generate simpoints and weights for `maxK` values of 30, 60 and 120
-- We use an interval size of 300 million
-- GAP is multi-threaded by default and uses the `OpenMP` library to do multi-threading, we can make it single-threaded by setting the `OMP_NUM_THREADS` environment variable to 1
-- The `generate_bbv.py` file first runs the target algorithm on the graph through valgrind and generates the corresponding BBVs
-- Then, it generates the simpoints and weights for the three different `maxK` values
-### Trace generation
-- We have given you a python script `get-trace-from-simpoint.py`, which can be run by `python3 get-trace-from-simpoint.py <algo> <graph>`, it will generate trace files
-- The nomenclature of the generated trace files will be `<algo>-<graph>-<skipped-ins>.trace.xz` where `skipped-ins` is the number of instructions skipped, divided by 100 million, to generate the trace
-- It first generates a dictionary from cluster ID to weight and one from cluster ID to representative interval
-- Then, it starts by assuming a weight threshold of 0.045 and `maxK` value of 120
-- If it finds between 1 and 3 clusters generated with the given maxK and threshold values, it stops
-- If there are too many clusters, the threshold is doubled
-- If there are too few clusters, the `maxK` value is decreased, first to 60 and then to 30 and threshold is reset
-- If no clusters are ever found, an error is thrown
-- Once we have the clusters, we obtain the representative intervals, which also gives us the `FAST_FORWARD_INSTRUCTIONS` by multiplying the representative intervals by 300 million
-- Finally, once we have the `FAST_FORWARD_INSTRUCTIONS`, we begin generating the trace files using the aforementioned command
+1. **GAP**
+   - Install and set up the GAP benchmark suite.
+   - Follow the instructions in [`gapbs/changes.md`](gapbs/changes.md).
+
+2. **Tracing Tools**
+   - Follow the setup instructions in the [Requirements](#requirements) section.
+
+3. **Python (Optional)**
+   - Python scripts automate trace generation.
+
+### Simpoint and Weight File Generation
+Use the `generate_bbv.py` script to generate simpoints and weights:
+```bash
+python3 generate_bbv.py <algo> <graph>
+```
+- Generates simpoints and weights for `maxK` values of 30, 60, and 120.
+- Interval size: 300 million.
+- Set GAP to single-threaded mode:
+  ```bash
+  export OMP_NUM_THREADS=1
+  ```
+- **Details**:
+  - The script first runs the target algorithm on the graph through Valgrind to generate BBVs.
+  - Then, it generates simpoints and weights for the specified `maxK` values.
+
+**Why `30`, `60`, `120`?**
+- The `generate_bbv.py` script runs SimPoint for these three `maxK` values to provide a sweep from coarse to fine clustering. Running multiple `maxK` values helps:
+   - reveal representative intervals that might only appear at certain granularities,
+   - allow comparison of cluster weights across granularities,
+   - help choose stable, high-weight intervals for trace generation without blindly trusting a single clustering resolution.
+
+### Trace Generation
+Use the `get-trace-from-simpoint.py` script to generate trace files:
+```bash
+python3 get-trace-from-simpoint.py <algo> <graph>
+```
+- **Trace File Naming**: `<algo>-<graph>-<skipped-ins>.trace.xz`.
+- **Process**:
+  1. Generates dictionaries mapping cluster IDs to weights and representative intervals.
+  2. Adjusts thresholds and `maxK` values to find 1-3 clusters.
+  3. Calculates `FAST_FORWARD_INSTRUCTIONS`.
+  4. Generates trace files using the calculated instructions.
+
+### Additional Notes
+- **Cluster Selection**:
+  - Aim for clusters with weights >0.1 at `maxK=120`.
+  - If weights are too low, decrease `maxK` or adjust the threshold.
+  - If too many clusters are found, increase the threshold or decrease `maxK`.
+- **Thresholds**:
+  - Default: 0.045.
+  - Adjust dynamically based on the number of clusters found.
