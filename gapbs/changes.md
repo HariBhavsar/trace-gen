@@ -4,7 +4,6 @@
 - Eventually, once we have a working version, try with other graphs
 # Procedure
 1. Ran `make` (~1 min)
-2. Modified `bench.mk` by changing `GRAPHS = twitter web road kron urand` to `GRAPHS = twitter` (~0 min)
 3. Ran `make bench-graphs` (~ 25/30 min)
 # Twitter Characteristics and Output
 - Graph has 61578415 nodes and 1468364884 directed edges for degree: 23
