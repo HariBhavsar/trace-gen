@@ -18,6 +18,9 @@ def algo_to_command(algo, graph) -> str:
     else:
         raise ValueError(f"Unknown algorithm: {algo}")
 
+def get_simpoint_command(algo, graph, kVal) -> str:
+    return f"./Simpoint/SimPoint.3.2/bin/simpoint -loadFVFile ./BBVs/{algo}-{graph}.out -maxK {kVal} -saveSimpoints ./Simpoint/Storage/Simpoints/{algo}-{graph}-{kVal}K.simpoints -saveSimpointWeights ./Simpoint/Storage/SimpointWeights/{algo}-{graph}-{kVal}K.weights"
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python3 generate-bbv.py <algo> <graph>")
@@ -33,3 +36,7 @@ if __name__ == "__main__":
     print("Executing the following command:")
     print(final_command)
     os.system(final_command)
+    os.system(get_simpoint_command(algo, graph, 30))
+    os.system(get_simpoint_command(algo, graph, 60))
+    os.system(get_simpoint_command(algo, graph, 120))
+    
