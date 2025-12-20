@@ -1,0 +1,17 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 40000000
+Simulation Instructions: 100000000
+Number of CPUs: 1
+Off-chip DRAM Size: 4 GiB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+VirtualMemory physical capacity: 4293914624 num_ppages: 1048319
+VirtualMemory page size: 4096 log2_page_size: 12
+
+CPU 0 runs ./pr-urand-468.trace.xz
+CPU 0 Bimodal branch predictor
+Basic BTB sets: 1024 ways: 8 indirect buffer size: 4096 RAS size: 64
+Heartbeat CPU 0 instructions: 10000000 cycles: 3729963 heartbeat IPC: 2.68099 cumulative IPC: 2.68099 (Simulation time: 0 hr 0 min 39 sec) 
+Heartbeat CPU 0 instructions: 20000000 cycles: 7459822 heartbeat IPC: 2.68107 cumulative IPC: 2.68103 (Simulation time: 0 hr 1 min 18 sec) 
+Heartbeat CPU 0 instructions: 30000000 cycles: 11189560 heartbeat IPC: 2.68115 cumulative IPC: 2.68107 (Simulation time: 0 hr 1 min 58 sec) 
